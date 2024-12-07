@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 /**
- * MessageSolveResponse model
+ * MessageSolveResponse model that represents the response returned after attempting to solve a message (task).
  *
  * @author vinodjohn
  * @created 07.12.2024

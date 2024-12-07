@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 /**
- * Message model
+ * Message model that represents a task (message) retrieved from the message board in the game.
  *
  * @author vinodjohn
  * @created 07.12.2024

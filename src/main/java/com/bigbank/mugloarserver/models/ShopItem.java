@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 /**
- * ShopItem model
+ * ShopItem model that represents an item available for purchase in the shop.
  *
  * @author vinodjohn
  * @created 07.12.2024

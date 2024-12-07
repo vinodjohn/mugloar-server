@@ -6,7 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
 /**
- * Configurations for Messages
+ * Configuration class for message source, enabling the application to use externalized messages from 'messages
+ * .properties'.
  *
  * @author vinodjohn
  * @created 07.12.2024

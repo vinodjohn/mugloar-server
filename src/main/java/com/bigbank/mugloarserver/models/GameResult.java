@@ -1,13 +1,15 @@
 package com.bigbank.mugloarserver.models;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * GameResult model
+ * GameResult model representing a past played game result stored in the H2 database.
  *
  * @author vinodjohn
  * @created 07.12.2024

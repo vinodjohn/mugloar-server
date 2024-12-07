@@ -3,7 +3,7 @@ package com.bigbank.mugloarserver.exceptions;
 import lombok.Getter;
 
 /**
- * Exception to handle generic errors
+ * A general exception for various known application errors, identified by a message code.
  *
  * @author vinodjohn
  * @created 07.12.2024

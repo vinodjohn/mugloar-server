@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 /**
- * Investigation model
+ * Investigation model that represents the result of an investigation about the player's reputation.
  *
  * @author vinodjohn
  * @created 07.12.2024

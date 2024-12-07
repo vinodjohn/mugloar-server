@@ -5,7 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 /**
- * Game model
+ * Game model that represents the state of a game as returned by the Dragons of Mugloar API.
+ *
  * @author vinodjohn
  * @created 07.12.2024
  */
