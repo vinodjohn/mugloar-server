@@ -66,8 +66,8 @@ public class MugloarServiceImpl implements MugloarService {
         validateGameId(gameId);
         validateNotBlank(adId);
 
-        MessageSolveResponse messageSolveResponse = post("/{gameId}/solve/{adId}", gameId, adId,
-                MessageSolveResponse.class);
+        String url = "/" + gameId + "/solve/" + adId;
+        MessageSolveResponse messageSolveResponse = post(url, MessageSolveResponse.class);
 
         if (messageSolveResponse == null) {
             throw new MugloarException("error.unexpected");
@@ -97,8 +97,8 @@ public class MugloarServiceImpl implements MugloarService {
         validateGameId(gameId);
         validateNotBlank(itemId);
 
-        ShopPurchaseResponse shopPurchaseResponse = post("/{gameId}/shop/buy/{itemId}", gameId, itemId,
-                ShopPurchaseResponse.class);
+        String url = "/" + gameId + "/shop/buy/" + itemId;
+        ShopPurchaseResponse shopPurchaseResponse = post(url, ShopPurchaseResponse.class);
 
         if (shopPurchaseResponse == null) {
             throw new MugloarException("error.unexpected");
@@ -157,16 +157,6 @@ public class MugloarServiceImpl implements MugloarService {
 
     private <T> T post(String uriTemplate, String gameId, Class<T> responseType) {
         return webClient.post().uri(uriTemplate, gameId)
-                .retrieve()
-                .onStatus(HttpStatusCode::isError, response -> response.bodyToMono(String.class)
-                        .flatMap(body -> Mono.error(new MugloarException("error.unexpected"))))
-                .bodyToMono(responseType)
-                .blockOptional()
-                .orElseThrow(() -> new MugloarException("error.unexpected"));
-    }
-
-    private <T> T post(String uriTemplate, String gameId, String param, Class<T> responseType) {
-        return webClient.post().uri(uriTemplate, gameId, param)
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, response -> response.bodyToMono(String.class)
                         .flatMap(body -> Mono.error(new MugloarException("error.unexpected"))))

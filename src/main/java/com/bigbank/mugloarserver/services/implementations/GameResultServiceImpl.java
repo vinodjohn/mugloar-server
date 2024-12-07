@@ -3,10 +3,10 @@ package com.bigbank.mugloarserver.services.implementations;
 import com.bigbank.mugloarserver.models.GameResult;
 import com.bigbank.mugloarserver.repositories.GameResultRepository;
 import com.bigbank.mugloarserver.services.GameResultService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
