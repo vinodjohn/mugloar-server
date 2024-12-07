@@ -30,8 +30,8 @@ public class GameResultServiceImpl implements GameResultService {
     }
 
     @Override
-    public GameResult save(GameResult result) {
+    public void save(GameResult result) {
         LOGGER.info("Saving a new game result: GameID={}, Score={}", result.getGameId(), result.getFinalScore());
-        return gameResultRepository.save(result);
+        gameResultRepository.save(result);
     }
 }

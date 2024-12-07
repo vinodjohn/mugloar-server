@@ -22,7 +22,6 @@ public interface GameResultService {
      * Saves a new game result to the repository.
      *
      * @param result the GameResult entity to save
-     * @return the saved GameResult entity
      */
-    GameResult save(GameResult result);
+    void save(GameResult result);
 }
