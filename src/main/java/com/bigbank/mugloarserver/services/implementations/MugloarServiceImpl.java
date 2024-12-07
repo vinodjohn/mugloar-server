@@ -36,7 +36,9 @@ public class MugloarServiceImpl implements MugloarService {
     @Override
     public Investigation investigate(String gameId) {
         validateGameId(gameId);
-        Investigation investigation = post("/{gameId}/investigate/reputation", gameId, Investigation.class);
+
+        String url = "/" + gameId + "/investigate/reputation";
+        Investigation investigation = post(url, Investigation.class);
 
         if (investigation == null) {
             throw new MugloarException("error.unexpected");
@@ -48,6 +50,7 @@ public class MugloarServiceImpl implements MugloarService {
     @Override
     public Message[] getMessages(String gameId) {
         validateGameId(gameId);
+
         Message[] messages = get("/{gameId}/messages", gameId, Message[].class);
 
         if (messages == null) {
@@ -147,16 +150,6 @@ public class MugloarServiceImpl implements MugloarService {
 
     private <T> T post(String uriTemplate, Class<T> responseType) {
         return webClient.post().uri(uriTemplate)
-                .retrieve()
-                .onStatus(HttpStatusCode::isError, response -> response.bodyToMono(String.class)
-                        .flatMap(body -> Mono.error(new MugloarException("error.unexpected"))))
-                .bodyToMono(responseType)
-                .blockOptional()
-                .orElseThrow(() -> new MugloarException("error.unexpected"));
-    }
-
-    private <T> T post(String uriTemplate, String gameId, Class<T> responseType) {
-        return webClient.post().uri(uriTemplate, gameId)
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, response -> response.bodyToMono(String.class)
                         .flatMap(body -> Mono.error(new MugloarException("error.unexpected"))))
