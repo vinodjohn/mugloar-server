@@ -5,12 +5,17 @@ import com.bigbank.mugloarserver.models.Game;
 import com.bigbank.mugloarserver.models.GameResult;
 import com.bigbank.mugloarserver.services.GameResultService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Controller handling web requests for starting a game and viewing game history.
@@ -21,29 +26,62 @@ import java.util.List;
 @Controller
 @RequestMapping("/game")
 public class GameController {
+    private final ConcurrentHashMap<String, Game> activeGames = new ConcurrentHashMap<>();
+
     @Autowired
     private GameFacade gameFacade;
-
     @Autowired
     private GameResultService gameResultService;
 
-    @GetMapping
-    public String startGame(Model model) {
-        Game finalGame = gameFacade.playGame();
-        boolean achievedGoal = finalGame.getScore() >= 1000;
+    @ResponseBody
+    @PostMapping("/start")
+    public ResponseEntity<?> startGame() {
+        Game game = gameFacade.initializeGame();
 
-        model.addAttribute("score", finalGame.getScore());
-        model.addAttribute("highScore", finalGame.getHighScore());
-        model.addAttribute("lives", finalGame.getLives());
-        model.addAttribute("achievedGoal", achievedGoal);
+        if (game == null) {
+            return ResponseEntity.status(500).body("{\"error\": \"Failed to start the game.\"}");
+        }
 
-        return "result";
+        String gameId = game.getGameId();
+
+        activeGames.put(gameId, game);
+
+        CompletableFuture.runAsync(() -> {
+            gameFacade.playGame(game);
+            activeGames.remove(gameId);
+        });
+
+        return ResponseEntity.ok().body("{\"gameId\": \"" + gameId + "\"}");
+    }
+
+    @GetMapping("/{id}")
+    public String displayResult(Model model, @PathVariable String id) {
+        GameResult gameResult = gameResultService.findByGameId(id);
+
+        if (gameResult != null) {
+            model.addAttribute("gameResult", gameResult);
+            model.addAttribute("processedMessages", gameResult.getProcessedMessages());
+            return "result";
+        } else {
+            model.addAttribute("errorMessage", "Failed to retrieve game results.");
+            return "error";
+        }
     }
 
     @GetMapping("/history")
-    public String history(Model model) {
-        List<GameResult> results = gameResultService.findAll();
-        model.addAttribute("results", results);
+    public String getGameHistory(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "error", required = false) String error,
+            Model model) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("timestamp").descending());
+        Page<GameResult> gameResultPage = gameResultService.getAllGameResults(pageable);
+        model.addAttribute("gameResultPage", gameResultPage);
+
+        if ("notfound".equals(error)) {
+            model.addAttribute("errorMessage", "Failed to retrieve game history.");
+            return "error";
+        }
 
         return "history";
     }

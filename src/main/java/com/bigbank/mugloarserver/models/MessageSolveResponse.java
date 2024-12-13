@@ -2,7 +2,9 @@ package com.bigbank.mugloarserver.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * MessageSolveResponse model that represents the response returned after attempting to solve a message (task).
@@ -11,6 +13,8 @@ import lombok.Data;
  * @created 07.12.2024
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MessageSolveResponse {
     @JsonProperty("success")
@@ -20,7 +24,7 @@ public class MessageSolveResponse {
     private int lives;
 
     @JsonProperty("gold")
-    private int gold;
+    private double gold;
 
     @JsonProperty("score")
     private int score;

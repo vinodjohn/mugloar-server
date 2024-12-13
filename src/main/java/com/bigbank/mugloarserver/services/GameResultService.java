@@ -1,8 +1,9 @@
 package com.bigbank.mugloarserver.services;
 
+import com.bigbank.mugloarserver.exceptions.DuplicateGameResultException;
 import com.bigbank.mugloarserver.models.GameResult;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Service interface for managing GameResult entities.
@@ -12,16 +13,25 @@ import java.util.List;
  */
 public interface GameResultService {
     /**
-     * Retrieves all recorded game results.
+     * Saves a GameResult to the repository.
      *
-     * @return a list of all GameResult entities
+     * @param gameResult The GameResult object to save.
+     * @throws DuplicateGameResultException if a GameResult with the same gameId already exists.
      */
-    List<GameResult> findAll();
+    void save(GameResult gameResult) throws DuplicateGameResultException;
 
     /**
-     * Saves a new game result to the repository.
+     * Retrieves a GameResult by its gameId.
      *
-     * @param result the GameResult entity to save
+     * @param gameId The unique identifier of the game.
+     * @return The corresponding GameResult, or null if not found.
      */
-    void save(GameResult result);
+    GameResult findByGameId(String gameId);
+
+    /**
+     * Retrieves all GameResult entries.
+     *
+     * @return A page of all GameResults.
+     */
+    Page<GameResult> getAllGameResults(Pageable pageable);
 }

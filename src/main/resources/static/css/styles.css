@@ -1,0 +1,82 @@
+#gameStatusContainer {
+    margin-top: 20px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    display: none;
+}
+
+#gameStatus {
+    font-size: 1.2rem;
+    min-height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#statusMessage {
+    flex: 1 1 auto;
+    word-break: break-word;
+    opacity: 1;
+}
+
+#statusSpinner {
+    flex: 0 0 auto;
+    display: none;
+}
+
+body {
+    background-color: #f8f9fa;
+}
+
+.card-custom {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-custom {
+    border-radius: 25px;
+    padding: 10px 30px;
+    font-size: 1.1rem;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.btn-custom:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+@media (max-width: 576px) {
+    #gameStatus {
+        font-size: 1rem;
+    }
+
+    .btn-custom {
+        width: 100%;
+        padding: 10px 0;
+    }
+}
+
+.clickable-row {
+    cursor: pointer;
+}
+
+.clickable-row:hover {
+    background-color: #f1f1f1;
+}
+
+.bg-success-custom {
+    background-color: #28a745;
+}
+
+.bg-failure-custom {
+    background-color: #dc3545;
+}
+
+.modal-content {
+    border-radius: 15px;
+}

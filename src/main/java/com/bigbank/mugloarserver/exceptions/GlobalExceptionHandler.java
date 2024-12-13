@@ -24,11 +24,20 @@ public class GlobalExceptionHandler {
     @Autowired
     private MessageSource messageSource;
 
-    @ExceptionHandler(GameNotFoundException.class)
+    @ExceptionHandler(DuplicateGameResultException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public String handleDuplicateGameResultException(DuplicateGameResultException ex, Model model) {
+        String message = messageSource.getMessage(ex.getLocalizedMessage(), null, LocaleContextHolder.getLocale());
+        LOGGER.error("DuplicateGameResultException: {}", message, ex);
+        model.addAttribute("errorMessage", message);
+        return "error";
+    }
+
+    @ExceptionHandler(GameOverException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleGameNotFound(GameNotFoundException ex, Model model) {
+    public String handleGameOverException(GameOverException ex, Model model) {
         String message = messageSource.getMessage(ex.getCode(), null, LocaleContextHolder.getLocale());
-        LOGGER.error("GameNotFoundException: {}", message, ex);
+        LOGGER.error("GameOverException: {}", message, ex);
         model.addAttribute("errorMessage", message);
         return "error";
     }

@@ -2,7 +2,9 @@ package com.bigbank.mugloarserver.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * ShopItem model that represents an item available for purchase in the shop.
@@ -11,6 +13,8 @@ import lombok.Data;
  * @created 07.12.2024
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ShopItem {
     @JsonProperty("id")
@@ -20,5 +24,7 @@ public class ShopItem {
     private String name;
 
     @JsonProperty("cost")
-    private int cost;
+    private double cost;
+
+    private String effect;
 }

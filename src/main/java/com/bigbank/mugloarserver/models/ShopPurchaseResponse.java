@@ -2,7 +2,9 @@ package com.bigbank.mugloarserver.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * ShopPurchaseResponse model that represents the response after attempting to purchase an item from the shop.
@@ -11,13 +13,15 @@ import lombok.Data;
  * @created 07.12.2024
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ShopPurchaseResponse {
     @JsonProperty("shoppingSuccess")
     private String shoppingSuccess;
 
     @JsonProperty("gold")
-    private int gold;
+    private double gold;
 
     @JsonProperty("lives")
     private int lives;
@@ -27,4 +31,10 @@ public class ShopPurchaseResponse {
 
     @JsonProperty("turn")
     private int turn;
+
+    private String message;
+
+    public boolean isSuccess() {
+        return Boolean.getBoolean(shoppingSuccess);
+    }
 }

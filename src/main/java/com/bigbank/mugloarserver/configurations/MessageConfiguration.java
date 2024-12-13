@@ -3,7 +3,7 @@ package com.bigbank.mugloarserver.configurations;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
 /**
  * Configuration class for message source, enabling the application to use externalized messages from 'messages
@@ -16,9 +16,10 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 public class MessageConfiguration {
     @Bean
     public MessageSource messageSource() {
-        ResourceBundleMessageSource source = new ResourceBundleMessageSource();
-        source.setBasenames("messages");
-        source.setDefaultEncoding("UTF-8");
-        return source;
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasename("classpath:messages");
+        messageSource.setDefaultEncoding("UTF-8");
+        messageSource.setUseCodeAsDefaultMessage(true);
+        return messageSource;
     }
 }

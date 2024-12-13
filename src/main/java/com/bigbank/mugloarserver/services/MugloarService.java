@@ -2,6 +2,8 @@ package com.bigbank.mugloarserver.services;
 
 import com.bigbank.mugloarserver.models.*;
 
+import java.util.List;
+
 /**
  * Service interface for interacting with the Mugloar API, starting games, investigating, retrieving messages,
  * solving tasks, and interacting with the shop.
@@ -11,7 +13,7 @@ import com.bigbank.mugloarserver.models.*;
  */
 public interface MugloarService {
     /**
-     * Starts a new game using the Mugloar API.
+     * Starts a new game
      *
      * @return the started Game state
      */
@@ -29,9 +31,9 @@ public interface MugloarService {
      * Retrieves all messages (tasks) available for the given game.
      *
      * @param gameId the unique ID of the game
-     * @return an array of Messages available
+     * @return a list of Messages available
      */
-    Message[] getMessages(String gameId);
+    List<Message> getMessages(String gameId);
 
     /**
      * Attempts to solve a specific message (task).
@@ -46,9 +48,9 @@ public interface MugloarService {
      * Retrieves a list of items available in the shop for the current game.
      *
      * @param gameId the unique ID of the game
-     * @return an array of ShopItems available for purchase
+     * @return a list of ShopItems available for purchase
      */
-    ShopItem[] getShopItems(String gameId);
+    List<ShopItem> getShopItems(String gameId);
 
     /**
      * Attempts to buy a specific item from the shop.

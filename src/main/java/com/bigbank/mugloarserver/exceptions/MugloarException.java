@@ -16,4 +16,9 @@ public class MugloarException extends RuntimeException {
         super(code);
         this.code = code;
     }
+
+    public MugloarException(String code, Throwable cause) {
+        super(code, cause);
+        this.code = code;
+    }
 }
