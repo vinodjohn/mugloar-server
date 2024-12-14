@@ -29,6 +29,7 @@ public class GameResult {
 
     @Column(nullable = false)
     private String gameId;
+
     private int score;
     private int highScore;
     private int lives;

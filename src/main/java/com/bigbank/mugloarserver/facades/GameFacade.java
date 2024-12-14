@@ -79,7 +79,7 @@ public class GameFacade {
 
         List<ProcessedMessage> processedMessages = new ArrayList<>();
 
-        while (true) { // Infinite loop controlled internally
+        while (true) {
             try {
                 LOGGER.debug("Starting a new game loop for GameID={}", game.getGameId());
 
@@ -122,16 +122,9 @@ public class GameFacade {
                 sendGameStateUpdate(game.getGameId(), "unexpected_error", "Unexpected error occurred.");
             }
         }
-
     }
 
-    // PRIVATE METHODS //
-    private void sendGameStateUpdate(String gameId, String state, String message) {
-        GameStateMessage gameStateMessage = new GameStateMessage(gameId, state, message, LocalDateTime.now());
-        messagingTemplate.convertAndSend("/topic/game-status/" + gameId, gameStateMessage);
-    }
-
-    private boolean performInvestigation(Game game) {
+    public boolean performInvestigation(Game game) {
         try {
             Investigation investigation = mugloarService.investigate(game.getGameId());
 
@@ -158,7 +151,7 @@ public class GameFacade {
         }
     }
 
-    private boolean performMessageSolving(Game game, List<ProcessedMessage> processedMessages) {
+    public boolean performMessageSolving(Game game, List<ProcessedMessage> processedMessages) {
         try {
             List<Message> messages = mugloarService.getMessages(game.getGameId());
 
@@ -268,59 +261,7 @@ public class GameFacade {
         }
     }
 
-    private ShopItem getShopItemById(String gameId, String itemId) {
-        List<ShopItem> shopItems = mugloarService.getShopItems(gameId);
-        Optional<ShopItem> optionalItem = shopItems.stream()
-                .filter(item -> item.getId().equalsIgnoreCase(itemId))
-                .findFirst();
-
-        if (optionalItem.isPresent()) {
-            return optionalItem.get();
-        } else {
-            LOGGER.warn("Shop item with ID '{}' not found in GameID={}.", itemId, gameId);
-            sendGameStateUpdate(gameId, "shop_item_not_found", "Required shop item '" + itemId + "' not found.");
-            return null;
-        }
-    }
-
-    private void performShopPhaseWithItems(Game game, List<ShopItem> items) {
-        if (items == null || items.isEmpty()) {
-            LOGGER.info("No missing items to purchase.");
-            sendGameStateUpdate(game.getGameId(), "no_missing_items", "No missing items to purchase.");
-            return;
-        }
-
-        for (ShopItem item : items) {
-            try {
-                sendGameStateUpdate(game.getGameId(), "now_purchasing_item", item.getName());
-                ShopPurchaseResponse purchaseResponse = mugloarService.buyItem(game.getGameId(), item.getId());
-
-                if (purchaseResponse != null && purchaseResponse.isSuccess()) {
-                    LOGGER.info("Bought required item '{}'.", item.getName());
-
-                    updateGameStateFromPurchaseResponse(game, purchaseResponse);
-                    inventoryService.addItem(game.getGameId(), item.getId());
-                    sendGameStateUpdate(game.getGameId(), "item_purchased", item.getName());
-
-                } else {
-                    LOGGER.warn("Failed to buy required item '{}'.", item.getName());
-                    sendGameStateUpdate(game.getGameId(), "item_purchase_failed", item.getName());
-                }
-            } catch (GameOverException goe) {
-                LOGGER.warn("Game Over detected during item purchase: {}", goe.getMessage());
-                sendGameStateUpdate(game.getGameId(), "game_over", "Game Over detected during item purchase.");
-                throw goe;
-            } catch (MugloarException me) {
-                LOGGER.error("MugloarException during item purchase: {}. Continuing the game.", me.getCode());
-                sendGameStateUpdate(game.getGameId(), "shop_error", "Encountered an error during item purchase.");
-            } catch (Exception e) {
-                LOGGER.error("Error buying item '{}': {}. Continuing the game.", item.getName(), e.getMessage(), e);
-                sendGameStateUpdate(game.getGameId(), "shop_unexpected_error", item.getName());
-            }
-        }
-    }
-
-    private void performShopPhase(Game game) {
+    public void performShopPhase(Game game) {
         try {
             List<ShopItem> shopItems = mugloarService.getShopItems(game.getGameId());
 
@@ -378,63 +319,7 @@ public class GameFacade {
         }
     }
 
-    private void updateGameStateFromPurchaseResponse(Game game, ShopPurchaseResponse purchaseResponse) {
-        if (purchaseResponse == null) {
-            LOGGER.warn("Purchase response is null. No game state updated.");
-            sendGameStateUpdate(game.getGameId(), "purchase_response_null", "Purchase response is null.");
-            return;
-        }
-
-        game.setLives(purchaseResponse.getLives());
-        game.setGold(purchaseResponse.getGold());
-        game.setLevel(purchaseResponse.getLevel());
-        game.setTurn(purchaseResponse.getTurn());
-
-        applyItemEffect(game, purchaseResponse.getMessage());
-
-        LOGGER.debug("Game state updated after purchasing item. Current state: {}", game);
-        sendGameStateUpdate(game.getGameId(), "purchase_updated", "Game state updated after purchasing item.");
-    }
-
-    private void applyItemEffect(Game game, String message) {
-        if (message == null || message.isEmpty()) {
-            LOGGER.warn("Purchase message is null or empty. No effect applied.");
-            sendGameStateUpdate(game.getGameId(), "unknown_purchase_effect", "Purchase message is null or empty.");
-            return;
-        }
-
-        if (message.contains("Healing Potion")) {
-            game.setLives(game.getLives() + 1);
-            LOGGER.debug("Applied effect of 'Healing Potion': Restored 1 life.");
-            sendGameStateUpdate(game.getGameId(), "item_effect_applied", "Applied effect of 'Healing Potion': " +
-                    "Restored 1 life.");
-        } else if (message.contains("Potion of Awesome Wings")) {
-            game.setWingStrength(game.getWingStrength() + 10);
-            LOGGER.debug("Applied effect of 'Potion of Awesome Wings': Increased wingStrength by 10.");
-            sendGameStateUpdate(game.getGameId(), "item_effect_applied", "Applied effect of 'Potion of Awesome " +
-                    "Wings': Increased wingStrength by 10.");
-        } else if (message.contains("Matrix")) {
-            game.setCunning(game.getCunning() + 5);
-            LOGGER.debug("Applied effect of 'Matrix': Increased cunning by 5.");
-            sendGameStateUpdate(game.getGameId(), "item_effect_applied", "Applied effect of 'Matrix': Increased " +
-                    "cunning by 5.");
-        } else if (message.contains("Excalibur Sword")) {
-            game.setFireBreath(game.getFireBreath() + 15);
-            LOGGER.debug("Applied effect of 'Excalibur Sword': Increased fireBreath by 15.");
-            sendGameStateUpdate(game.getGameId(), "item_effect_applied", "Applied effect of 'Excalibur Sword': " +
-                    "Increased fireBreath by 15.");
-        } else if (message.contains("Aegis Shield")) {
-            game.setScaleThickness(game.getScaleThickness() + 10);
-            LOGGER.debug("Applied effect of 'Aegis Shield': Increased scaleThickness by 10.");
-            sendGameStateUpdate(game.getGameId(), "item_effect_applied", "Applied effect of 'Aegis Shield': Increased" +
-                    " scaleThickness by 10.");
-        } else {
-            LOGGER.warn("Unknown item effect in message '{}'. No effect applied.", message);
-            sendGameStateUpdate(game.getGameId(), "unknown_item_effect", message);
-        }
-    }
-
-    private void finalizeGame(Game game, List<ProcessedMessage> processedMessages) {
+    public void finalizeGame(Game game, List<ProcessedMessage> processedMessages) {
         if (game == null) {
             LOGGER.warn("Game is null. Cannot finalize a non-existent game.");
             sendGameStateUpdate("Unknown", "unknown_finalization", "Game is null. Cannot finalize a non-existent game" +
@@ -492,7 +377,7 @@ public class GameFacade {
         }
     }
 
-    private void terminateGame(Game game, List<ProcessedMessage> processedMessages, String terminationReason) {
+    public void terminateGame(Game game, List<ProcessedMessage> processedMessages, String terminationReason) {
         if (game == null) {
             LOGGER.warn("Game is null. Using a default game state for termination.");
             sendGameStateUpdate("Unknown", "unknown_termination", "Terminating a non-existent game.");
@@ -504,7 +389,7 @@ public class GameFacade {
         finalizeGame(game, processedMessages);
     }
 
-    private void updateGameStateFromSolveResponse(Game game, MessageSolveResponse solveResponse) {
+    public void updateGameStateFromSolveResponse(Game game, MessageSolveResponse solveResponse) {
         if (solveResponse == null) {
             LOGGER.warn("Solve response is null. No game state updated.");
             sendGameStateUpdate(game.getGameId(), "solve_response_null", "Solve response is null.");
@@ -518,5 +403,119 @@ public class GameFacade {
 
         LOGGER.debug("Game state updated after solving message. Current state: {}", game);
         sendGameStateUpdate(game.getGameId(), "solve_updated", "Game state updated after solving message.");
+    }
+
+    // PRIVATE METHODS //
+    private void sendGameStateUpdate(String gameId, String state, String message) {
+        GameStateMessage gameStateMessage = new GameStateMessage(gameId, state, message, LocalDateTime.now());
+        messagingTemplate.convertAndSend("/topic/game-status/" + gameId, gameStateMessage);
+    }
+
+    private ShopItem getShopItemById(String gameId, String itemId) {
+        List<ShopItem> shopItems = mugloarService.getShopItems(gameId);
+        Optional<ShopItem> optionalItem = shopItems.stream()
+                .filter(item -> item.getId().equalsIgnoreCase(itemId))
+                .findFirst();
+
+        if (optionalItem.isPresent()) {
+            return optionalItem.get();
+        } else {
+            LOGGER.warn("Shop item with ID '{}' not found in GameID={}.", itemId, gameId);
+            sendGameStateUpdate(gameId, "shop_item_not_found", "Required shop item '" + itemId + "' not found.");
+            return null;
+        }
+    }
+
+    private void performShopPhaseWithItems(Game game, List<ShopItem> items) {
+        if (items == null || items.isEmpty()) {
+            LOGGER.info("No missing items to purchase.");
+            sendGameStateUpdate(game.getGameId(), "no_missing_items", "No missing items to purchase.");
+            return;
+        }
+
+        for (ShopItem item : items) {
+            try {
+                sendGameStateUpdate(game.getGameId(), "now_purchasing_item", item.getName());
+                ShopPurchaseResponse purchaseResponse = mugloarService.buyItem(game.getGameId(), item.getId());
+
+                if (purchaseResponse != null && purchaseResponse.isSuccess()) {
+                    LOGGER.info("Bought required item '{}'.", item.getName());
+
+                    updateGameStateFromPurchaseResponse(game, purchaseResponse);
+                    inventoryService.addItem(game.getGameId(), item.getId());
+                    sendGameStateUpdate(game.getGameId(), "item_purchased", item.getName());
+
+                } else {
+                    LOGGER.warn("Failed to buy required item '{}'.", item.getName());
+                    sendGameStateUpdate(game.getGameId(), "item_purchase_failed", item.getName());
+                }
+            } catch (GameOverException goe) {
+                LOGGER.warn("Game Over detected during item purchase: {}", goe.getMessage());
+                sendGameStateUpdate(game.getGameId(), "game_over", "Game Over detected during item purchase.");
+                throw goe;
+            } catch (MugloarException me) {
+                LOGGER.error("MugloarException during item purchase: {}. Continuing the game.", me.getCode());
+                sendGameStateUpdate(game.getGameId(), "shop_error", "Encountered an error during item purchase.");
+            } catch (Exception e) {
+                LOGGER.error("Error buying item '{}': {}. Continuing the game.", item.getName(), e.getMessage(), e);
+                sendGameStateUpdate(game.getGameId(), "shop_unexpected_error", item.getName());
+            }
+        }
+    }
+
+    private void updateGameStateFromPurchaseResponse(Game game, ShopPurchaseResponse purchaseResponse) {
+        if (purchaseResponse == null) {
+            LOGGER.warn("Purchase response is null. No game state updated.");
+            sendGameStateUpdate(game.getGameId(), "purchase_response_null", "Purchase response is null.");
+            return;
+        }
+
+        game.setLives(purchaseResponse.getLives());
+        game.setGold(purchaseResponse.getGold());
+        game.setLevel(purchaseResponse.getLevel());
+        game.setTurn(purchaseResponse.getTurn());
+
+        applyItemEffect(game, purchaseResponse.getMessage());
+
+        LOGGER.debug("Game state updated after purchasing item. Current state: {}", game);
+        sendGameStateUpdate(game.getGameId(), "purchase_updated", "Game state updated after purchasing item.");
+    }
+
+    private void applyItemEffect(Game game, String message) {
+        if (message == null || message.isEmpty()) {
+            LOGGER.warn("Purchase message is null or empty. No effect applied.");
+            sendGameStateUpdate(game.getGameId(), "unknown_purchase_effect", "Purchase message is null or empty.");
+            return;
+        }
+
+        if (message.contains("Healing Potion")) {
+            game.setLives(game.getLives() + 1);
+            LOGGER.debug("Applied effect of 'Healing Potion': Restored 1 life.");
+            sendGameStateUpdate(game.getGameId(), "item_effect_applied", "Applied effect of 'Healing Potion': " +
+                    "Restored 1 life.");
+        } else if (message.contains("Potion of Awesome Wings")) {
+            game.setWingStrength(game.getWingStrength() + 10);
+            LOGGER.debug("Applied effect of 'Potion of Awesome Wings': Increased wingStrength by 10.");
+            sendGameStateUpdate(game.getGameId(), "item_effect_applied", "Applied effect of 'Potion of Awesome " +
+                    "Wings': Increased wingStrength by 10.");
+        } else if (message.contains("Matrix")) {
+            game.setCunning(game.getCunning() + 5);
+            LOGGER.debug("Applied effect of 'Matrix': Increased cunning by 5.");
+            sendGameStateUpdate(game.getGameId(), "item_effect_applied", "Applied effect of 'Matrix': Increased " +
+                    "cunning by 5.");
+        } else if (message.contains("Excalibur Sword")) {
+            game.setFireBreath(game.getFireBreath() + 15);
+            LOGGER.debug("Applied effect of 'Excalibur Sword': Increased fireBreath by 15.");
+            sendGameStateUpdate(game.getGameId(), "item_effect_applied", "Applied effect of 'Excalibur Sword': " +
+                    "Increased fireBreath by 15.");
+        } else if (message.contains("Aegis Shield")) {
+            game.setScaleThickness(game.getScaleThickness() + 10);
+            LOGGER.debug("Applied effect of 'Aegis Shield': Increased scaleThickness by 10.");
+            sendGameStateUpdate(game.getGameId(), "item_effect_applied", "Applied effect of 'Aegis Shield': Increased" +
+                    " scaleThickness by 10.");
+        } else {
+            LOGGER.warn("Unknown item effect in message '{}'. No effect applied.", message);
+            sendGameStateUpdate(game.getGameId(), "unknown_item_effect", message);
+        }
     }
 }
