@@ -32,10 +32,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class GameControllerIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
+
     @Autowired
     private GameResultService gameResultService;
-    @Autowired
-    private GameFacade gameFacade;
 
     @Test
     void startGame_ReturnsGameId() throws Exception {
