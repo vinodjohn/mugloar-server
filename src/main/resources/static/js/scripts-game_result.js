@@ -23,12 +23,18 @@ $(document).ready(function () {
         $('#modalTurn').text(turn);
         $('#modalReward').text(reward);
 
+        const $modalSuccess = $('#modalSuccess');
+
         if (success === true || success === 'true') {
-            $('#modalSuccess').text('True');
-            $('#modalSuccess').removeClass('bg-danger').addClass('bg-success');
+            $modalSuccess
+                .text('True')
+                .removeClass('bg-danger')
+                .addClass('bg-success');
         } else {
-            $('#modalSuccess').text('False');
-            $('#modalSuccess').removeClass('bg-success').addClass('bg-danger');
+            $modalSuccess
+                .text('False')
+                .removeClass('bg-success')
+                .addClass('bg-danger');
         }
 
         if (failureReason && failureReason.trim() !== '') {

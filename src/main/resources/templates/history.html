@@ -19,7 +19,7 @@
         <span th:text="${errorMessage}">Error Message</span>
     </div>
 
-    <div th:if="${gameResultPage != null and !gameResultPage.empty}">
+    <div th:if="${not empty gameResultPage}">
         <div class="table-responsive">
             <table class="table table-striped table-hover" id="gameHistoryTable">
                 <thead class="table-dark">
@@ -31,13 +31,12 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr class="clickable-row"
-                    th:data-gameid="${result.gameId}"
+                <tr class="clickable-row" th:data-gameid="${result.gameId}"
                     th:each="result : ${gameResultPage.content}">
                     <td th:text="${result.gameId}">GameID</td>
                     <td th:text="${result.score}">0</td>
-                    <td th:text="${#temporals.format(result.timestamp, 'MMMM dd, yyyy hh:mm a')}">December 13, 2024
-                        03:26 AM
+                    <td th:text="${#temporals.format(result.timestamp, 'MMMM dd, yyyy hh:mm a')}">
+                        December 13, 2024 03:26 AM
                     </td>
                     <td>
                         <i aria-label="View Details" class="bi bi-eye-fill text-primary" style="font-size: 1.2rem;"
@@ -49,9 +48,32 @@
         </div>
     </div>
 
-    <div th:unless="${gameResultPage != null and !gameResultPage.empty}">
+    <div th:unless="${not empty gameResultPage}">
         <div class="alert alert-info" role="alert">
             No game history available.
+        </div>
+    </div>
+</div>
+
+<div aria-hidden="true" aria-labelledby="messageModalLabel" class="modal fade" id="messageModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Solved Message Details</h5>
+                <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Game ID:</strong> <span id="modalGameId">GameID</span></p>
+                <p><strong>Score:</strong> <span id="modalScore">0</span></p>
+                <p><strong>High Score:</strong> <span id="modalHighScore">0</span></p>
+                <p><strong>Lives Remaining:</strong> <span id="modalLives">0</span></p>
+                <p><strong>Gold:</strong> <span id="modalGold">0</span></p>
+                <p><strong>Level:</strong> <span id="modalLevel">0</span></p>
+                <p><strong>Turns Taken:</strong> <span id="modalTurn">0</span></p>
+                <p><strong>Finish Time:</strong> <span id="modalFinishTime">December 13, 2024 03:26 AM</span></p>
+                <p id="modalFailureReason" style="display: none;"><strong>Reason:</strong> <span id="modalFailureText">Reason</span>
+                </p>
+            </div>
         </div>
     </div>
 </div>

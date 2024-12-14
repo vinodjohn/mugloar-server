@@ -50,10 +50,10 @@ public class GameFacade {
         try {
             Game game = mugloarService.startGame();
 
-            LOGGER.info(String.format("Game started: GameID=%s | Lives=%d | Gold=%.2f | Level=%d | Score=%d | " +
+            LOGGER.info("Game started: GameID=%s | Lives=%d | Gold=%.2f | Level=%d | Score=%d | " +
                             "Turn=%d | Dragon Level=%d",
                     game.getGameId(), game.getLives(), game.getGold(), game.getLevel(), game.getScore(),
-                    game.getTurn(), game.getDragonLevel()));
+                    game.getTurn(), game.getDragonLevel());
 
             sendGameStateUpdate(game.getGameId(), "game_initialized", "Game initialized.");
 
@@ -338,14 +338,13 @@ public class GameFacade {
         boolean achievedGoal = game.getScore() >= 1000;
 
         if (achievedGoal) {
-            LOGGER.info(String.format("Congratulations! Achieved the minimum score of 1000 with Score=%d for " +
-                            "GameID=%s.",
-                    game.getScore(), game.getGameId()));
+            LOGGER.info("Congratulations! Achieved the minimum score of 1000 with Score={} for GameID={}.",
+                    game.getScore(), game.getGameId());
             sendGameStateUpdate(game.getGameId(), "game_completed", "Congratulations! Achieved the minimum score of " +
                     "1000.");
         } else {
-            LOGGER.warn(String.format("Game over for GameID=%s. Final Score=%d did not achieve the minimum goal.",
-                    game.getGameId(), game.getScore()));
+            LOGGER.warn("Game over for GameID={}. Final Score={} did not achieve the minimum goal.",
+                    game.getGameId(), game.getScore());
             sendGameStateUpdate(game.getGameId(), "game_over", "Game over. Final score did not achieve the minimum " +
                     "goal.");
         }
@@ -384,7 +383,7 @@ public class GameFacade {
             game = new Game();
         }
 
-        LOGGER.info(String.format("Terminating game for GameID=%s due to: %s", game.getGameId(), terminationReason));
+        LOGGER.info("Terminating game for GameID={} due to: {}", game.getGameId(), terminationReason);
         sendGameStateUpdate(game.getGameId(), "game_terminated", terminationReason);
         finalizeGame(game, processedMessages);
     }

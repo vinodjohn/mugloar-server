@@ -49,15 +49,15 @@ public class StrategyServiceImpl implements StrategyService {
         double stateProportion = (double) state / total;
         double underworldProportion = (double) underworld / total;
 
-        LOGGER.debug(String.format("Proportions - People: %.2f, State: %.2f, Underworld: %.2f",
-                peopleProportion, stateProportion, underworldProportion));
+        LOGGER.debug("Proportions - People: {}, State: {}, Underworld: {}",
+                peopleProportion, stateProportion, underworldProportion);
 
         this.peopleMultiplier = peopleProportion;
         this.stateMultiplier = stateProportion;
         this.underworldMultiplier = underworldProportion;
 
-        LOGGER.info(String.format("Adjusted multipliers - People: %.2f, State: %.2f, Underworld: %.2f",
-                peopleMultiplier, stateMultiplier, underworldMultiplier));
+        LOGGER.info("Adjusted multipliers - People: {}, State: {}, Underworld: {}",
+                peopleMultiplier, stateMultiplier, underworldMultiplier);
     }
 
     @Override
@@ -86,8 +86,8 @@ public class StrategyServiceImpl implements StrategyService {
         if (bestMessage.isPresent()) {
             Message selectedMessage = bestMessage.get().message();
 
-            LOGGER.debug(String.format("Chosen message ID: %s with difficulty score: %.2f", selectedMessage.getAdId(),
-                    bestMessage.get().score()));
+            LOGGER.debug("Chosen message ID: {} with difficulty score: {}", selectedMessage.getAdId(),
+                    bestMessage.get().score());
             return selectedMessage;
         } else {
             LOGGER.info("No suitable messages found after scoring.");
@@ -123,8 +123,8 @@ public class StrategyServiceImpl implements StrategyService {
                 selectedItems.add(item);
                 remainingGold -= item.getCost();
 
-                LOGGER.debug(String.format("Selected required item '%s' for purchase. Remaining gold: %.2f",
-                        item.getName(), remainingGold));
+                LOGGER.debug("Selected required item '{}' for purchase. Remaining gold: {}",
+                        item.getName(), remainingGold);
             }
         }
 
@@ -140,8 +140,8 @@ public class StrategyServiceImpl implements StrategyService {
                 selectedItems.add(item);
                 remainingGold -= item.getCost();
 
-                LOGGER.debug(String.format("Selected additional item '%s' for purchase. Remaining gold: %.2f",
-                        item.getName(), remainingGold));
+                LOGGER.debug("Selected additional item '{}' for purchase. Remaining gold: {}",
+                        item.getName(), remainingGold);
             }
         }
 
@@ -198,9 +198,9 @@ public class StrategyServiceImpl implements StrategyService {
         int failures = failureCounts.getOrDefault(message.getAdId(), 0);
         adjustedDifficulty += failures * 0.5; // Example: each failure adds 0.5 to difficulty
 
-        LOGGER.debug(String.format("Computed difficulty score for message '%s': %.2f (Category: %s, Adjustment: %.2f," +
-                        " Failures: %d, Dragon Level: %.2f)",
-                message.getAdId(), adjustedDifficulty, category, categoryAdjustment, failures, dragonLevel));
+        LOGGER.debug("Computed difficulty score for message '{}': {} (Category: {}, Adjustment: {}, Failures: {}, " +
+                        "Dragon Level: {})",
+                message.getAdId(), adjustedDifficulty, category, categoryAdjustment, failures, dragonLevel);
 
         return adjustedDifficulty;
     }
@@ -246,7 +246,7 @@ public class StrategyServiceImpl implements StrategyService {
         // Formula: Higher cost and higher multipliers increase the score
         double score = cost * (peopleMultiplier + stateMultiplier + underworldMultiplier);
 
-        LOGGER.debug(String.format("Computed score for shop item '%s': %.2f", item.getName(), score));
+        LOGGER.debug("Computed score for shop item '{}': {}", item.getName(), score);
 
         return score;
     }

@@ -15,26 +15,41 @@
 <div class="container mt-5">
     <div class="card">
         <div class="card-header text-center">
-            <h2 class="text-success" th:if="${gameResult.achievedGoal}">Congratulations! You have achieved your
-                goal.</h2>
-            <h2 class="text-warning" th:unless="${gameResult.achievedGoal}">Better luck next time!</h2>
+            <h2 class="text-success" th:if="${gameResult.achievedGoal}">
+                Congratulations! You have achieved your goal.
+            </h2>
+            <h2 class="text-warning" th:unless="${gameResult.achievedGoal}">
+                Better luck next time!
+            </h2>
         </div>
         <div class="card-body">
             <ul class="list-group list-group-flush">
-                <li class="list-group-item"><strong>Game ID:</strong> <span th:text="${gameResult.gameId}">GameID</span>
+                <li class="list-group-item">
+                    <strong>Game ID:</strong> <span th:text="${gameResult.gameId}">GameID</span>
                 </li>
-                <li class="list-group-item"><strong>Score:</strong> <span th:text="${gameResult.score}">0</span></li>
-                <li class="list-group-item"><strong>High Score:</strong> <span
-                        th:text="${gameResult.highScore}">0</span></li>
-                <li class="list-group-item"><strong>Lives Remaining:</strong> <span
-                        th:text="${gameResult.lives}">0</span></li>
-                <li class="list-group-item"><strong>Gold:</strong> <span th:text="${gameResult.gold}">0</span></li>
-                <li class="list-group-item"><strong>Level:</strong> <span th:text="${gameResult.level}">0</span></li>
-                <li class="list-group-item"><strong>Turns Taken:</strong> <span th:text="${gameResult.turn}">0</span>
+                <li class="list-group-item">
+                    <strong>Score:</strong> <span th:text="${gameResult.score}">0</span>
+                </li>
+                <li class="list-group-item">
+                    <strong>High Score:</strong> <span th:text="${gameResult.highScore}">0</span>
+                </li>
+                <li class="list-group-item">
+                    <strong>Lives Remaining:</strong> <span th:text="${gameResult.lives}">0</span>
+                </li>
+                <li class="list-group-item">
+                    <strong>Gold:</strong> <span th:text="${gameResult.gold}">0</span>
+                </li>
+                <li class="list-group-item">
+                    <strong>Level:</strong> <span th:text="${gameResult.level}">0</span>
+                </li>
+                <li class="list-group-item">
+                    <strong>Turns Taken:</strong> <span th:text="${gameResult.turn}">0</span>
                 </li>
                 <li class="list-group-item">
                     <strong>Finish Time:</strong>
-                    <span th:text="${#temporals.format(gameResult.timestamp, 'MMMM dd, yyyy hh:mm a')}">December 13, 2024 03:26 AM</span>
+                    <span th:text="${#temporals.format(gameResult.timestamp, 'MMMM dd, yyyy hh:mm a')}">
+                        December 13, 2024 03:26 AM
+                    </span>
                 </li>
             </ul>
         </div>
@@ -46,7 +61,7 @@
 
     <div class="mt-4">
         <h3>Solved Messages</h3>
-        <div th:if="${processedMessages != null and !processedMessages.empty}">
+        <div th:if="${not empty processedMessages}">
             <div class="table-responsive">
                 <table class="table table-striped table-hover" id="processedMessagesTable">
                     <thead class="table-dark">
@@ -81,7 +96,7 @@
                 </table>
             </div>
         </div>
-        <div th:unless="${processedMessages != null and !processedMessages.empty}">
+        <div th:unless="${not empty processedMessages}">
             <div class="alert alert-info" role="alert">
                 No messages were solved in this game.
             </div>
@@ -102,7 +117,8 @@
                 <p><strong>Turn:</strong> <span id="modalTurn">0</span></p>
                 <p><strong>Reward:</strong> <span id="modalReward">0</span></p>
                 <p><strong>Success:</strong> <span class="badge" id="modalSuccess">True/False</span></p>
-                <p id="modalFailureReason" style="display: none;"><strong>Reason:</strong> <span id="modalFailureText">Reason</span>
+                <p id="modalFailureReason" style="display: none;">
+                    <strong>Reason:</strong> <span id="modalFailureText">Reason</span>
                 </p>
             </div>
         </div>
