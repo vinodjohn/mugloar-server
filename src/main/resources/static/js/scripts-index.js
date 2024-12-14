@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function (options) {
+document.addEventListener('DOMContentLoaded', function () {
     const startGameBtn = document.getElementById('startGameBtn');
     const gameStatusContainer = document.getElementById('gameStatusContainer');
     const statusMessage = document.getElementById('statusMessage');

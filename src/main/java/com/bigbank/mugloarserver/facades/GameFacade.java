@@ -50,8 +50,8 @@ public class GameFacade {
         try {
             Game game = mugloarService.startGame();
 
-            LOGGER.info("Game started: GameID=%s | Lives=%d | Gold=%.2f | Level=%d | Score=%d | " +
-                            "Turn=%d | Dragon Level=%d",
+            LOGGER.info("Game started: GameID={} | Lives={} | Gold={} | Level={} | Score={} | " +
+                            "Turn={}| Dragon Level={}",
                     game.getGameId(), game.getLives(), game.getGold(), game.getLevel(), game.getScore(),
                     game.getTurn(), game.getDragonLevel());
 
