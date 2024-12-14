@@ -26,9 +26,8 @@ import java.util.List;
 @Service
 public class MugloarServiceImpl implements MugloarService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MugloarServiceImpl.class);
-
-    private final WebClient webClient;
     private final ObjectMapper objectMapper;
+    public WebClient webClient;
 
     public MugloarServiceImpl(@Value("${mugloar.api.base-url}") String baseUrl) {
         this.webClient = WebClient.builder()
@@ -184,81 +183,57 @@ public class MugloarServiceImpl implements MugloarService {
         return false;
     }
 
-    private <T> T get(String uriTemplate, String gameId, ParameterizedTypeReference<T> responseType) {
+    private <T> T execute(String method, String uriTemplate, Class<T> cls, ParameterizedTypeReference<T> ref,
+                          Object... vars) {
         try {
-            Mono<String> responseMono = webClient.get()
-                    .uri(uriTemplate, gameId)
+            Mono<String> responseMono = method.equalsIgnoreCase("GET")
+                    ? webClient.get().uri(uriTemplate, vars)
                     .retrieve()
-                    .onStatus(HttpStatusCode::isError, response ->
-                            response.bodyToMono(String.class)
-                                    .flatMap(body -> {
-                                        String resolvedUri = resolveUri(uriTemplate, gameId);
-                                        if (isGameOver(body)) {
-                                            LOGGER.warn("Game Over detected in response from {}: {}", resolvedUri,
-                                                    body);
-                                            return Mono.error(new GameOverException("Received 'Game Over' status from" +
-                                                    " GET " + resolvedUri));
-                                        }
-                                        LOGGER.error("Error response from {}: {}", resolvedUri, body);
-                                        return Mono.error(new MugloarException("error.unexpected"));
-                                    }))
+                    .onStatus(HttpStatusCode::isError, resp -> resp.bodyToMono(String.class).flatMap(body ->
+                            handleErrorResponse(method, uriTemplate, vars, body)))
+                    .bodyToMono(String.class)
+                    : webClient.post().uri(uriTemplate, vars)
+                    .retrieve()
+                    .onStatus(HttpStatusCode::isError, resp -> resp.bodyToMono(String.class).flatMap(body ->
+                            handleErrorResponse(method, uriTemplate, vars, body)))
                     .bodyToMono(String.class);
 
-            String rawResponse = responseMono.blockOptional().orElseThrow(() -> new MugloarException("error" +
-                    ".unexpected"));
+            String raw = responseMono.blockOptional().orElseThrow(() -> new MugloarException("error.unexpected"));
 
-            if (isGameOver(rawResponse)) {
-                throw new GameOverException("Received 'Game Over' status from GET " + resolveUri(uriTemplate, gameId));
+            if (isGameOver(raw)) {
+                throw new GameOverException("Received 'Game Over' status from " + method + " " + resolveUri(uriTemplate, vars));
             }
 
-            return objectMapper.readValue(rawResponse,
-                    objectMapper.getTypeFactory().constructType(responseType.getType()));
-        } catch (GameOverException goe) {
-            LOGGER.warn(goe.getMessage());
-            throw goe;
+            return cls != null
+                    ? objectMapper.readValue(raw, cls)
+                    : objectMapper.readValue(raw, objectMapper.getTypeFactory().constructType(ref.getType()));
+
+        } catch (GameOverException g) {
+            LOGGER.warn(g.getMessage());
+            throw g;
         } catch (Exception e) {
-            String resolvedUri = resolveUri(uriTemplate, gameId);
-            LOGGER.error("GET request to {} failed: {}", resolvedUri, e.getMessage(), e);
+            String resolved = resolveUri(uriTemplate, vars);
+            LOGGER.error("{} request to {} failed: {}", method, resolved, e.getMessage(), e);
             throw new MugloarException("error.unexpected", e);
         }
     }
 
-    private <T> T post(String uriTemplate, Class<T> responseType, Object... uriVariables) {
-        try {
-            Mono<String> responseMono = webClient.post()
-                    .uri(uriTemplate, uriVariables)
-                    .retrieve()
-                    .onStatus(HttpStatusCode::isError, response ->
-                            response.bodyToMono(String.class)
-                                    .flatMap(body -> {
-                                        String resolvedUri = resolveUri(uriTemplate, uriVariables);
-                                        if (isGameOver(body)) {
-                                            LOGGER.warn("Game Over detected in response from {}: {}", resolvedUri,
-                                                    body);
-                                            return Mono.error(new GameOverException("Received 'Game Over' status from" +
-                                                    " POST " + resolvedUri));
-                                        }
-                                        LOGGER.error("Error response from {}: {}", resolvedUri, body);
-                                        return Mono.error(new MugloarException("error.unexpected"));
-                                    }))
-                    .bodyToMono(String.class);
-
-            String rawResponse = responseMono.blockOptional().orElseThrow(() -> new MugloarException("error" +
-                    ".unexpected"));
-
-            if (isGameOver(rawResponse)) {
-                throw new GameOverException("Received 'Game Over' status from POST " + resolveUri(uriTemplate,
-                        uriVariables));
-            }
-
-            return objectMapper.readValue(rawResponse, responseType);
-        } catch (GameOverException goe) {
-            LOGGER.warn(goe.getMessage());
-            throw goe;
-        } catch (Exception e) {
-            String resolvedUri = resolveUri(uriTemplate, uriVariables);
-            LOGGER.error("POST request to {} failed: {}", resolvedUri, e.getMessage(), e);
-            throw new MugloarException("error.unexpected", e);
+    private Mono<? extends Throwable> handleErrorResponse(String method, String uriTemplate, Object[] vars,
+                                                          String body) {
+        String resolved = resolveUri(uriTemplate, vars);
+        if (isGameOver(body)) {
+            LOGGER.warn("Game Over detected in response from {}: {}", resolved, body);
+            return Mono.error(new GameOverException("Received 'Game Over' status from " + method + " " + resolved));
         }
+        LOGGER.error("Error response from {}: {}", resolved, body);
+        return Mono.error(new MugloarException("error.unexpected"));
+    }
+
+    private <T> T get(String uriTemplate, String gameId, ParameterizedTypeReference<T> responseType) {
+        return execute("GET", uriTemplate, null, responseType, gameId);
+    }
+
+    private <T> T post(String uriTemplate, Class<T> responseType, Object... uriVariables) {
+        return execute("POST", uriTemplate, responseType, null, uriVariables);
     }
 }

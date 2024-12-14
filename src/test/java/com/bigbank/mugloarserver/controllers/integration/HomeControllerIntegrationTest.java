@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -14,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 /**
- * Integration test for HomeController
+ * Integration tests for HomeController
  *
  * @author vinodjohn
  * @created 14.12.2024
@@ -24,9 +23,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class HomeControllerIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
-
-    @LocalServerPort
-    private int port;
 
     @Test
     void homeRequest_ReturnsIndexView() throws Exception {

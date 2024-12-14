@@ -25,6 +25,4 @@ public class ShopItem {
 
     @JsonProperty("cost")
     private double cost;
-
-    private String effect;
 }

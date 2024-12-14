@@ -6,7 +6,6 @@ import com.bigbank.mugloarserver.exceptions.MugloarException;
 import com.bigbank.mugloarserver.facades.GameFacade;
 import com.bigbank.mugloarserver.models.*;
 import com.bigbank.mugloarserver.services.GameResultService;
-import com.bigbank.mugloarserver.services.InventoryService;
 import com.bigbank.mugloarserver.services.MugloarService;
 import com.bigbank.mugloarserver.services.StrategyService;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit test for GameFacade
+ * Unit tests for GameFacade
  *
  * @author vinodjohn
  * @created 14.12.2024
@@ -43,9 +42,6 @@ class GameFacadeTest {
 
     @Mock
     private GameResultService gameResultService;
-
-    @Mock
-    private InventoryService inventoryService;
 
     @Mock
     private SimpMessagingTemplate messagingTemplate;
@@ -242,7 +238,7 @@ class GameFacadeTest {
 
     @Test
     void performShopPhase_WithItems() {
-        ShopItem shopItem = new ShopItem("hpot", "Healing Potion", 50.0, "");
+        ShopItem shopItem = new ShopItem("hpot", "Healing Potion", 50.0);
         when(mugloarService.getShopItems("test123")).thenReturn(List.of(shopItem));
         when(strategyService.decideItemsToBuy(any(Game.class), anyList())).thenReturn(List.of(shopItem));
 

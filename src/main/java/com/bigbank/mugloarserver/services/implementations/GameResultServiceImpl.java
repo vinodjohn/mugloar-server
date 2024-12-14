@@ -32,7 +32,7 @@ public class GameResultServiceImpl implements GameResultService {
     @Transactional
     public void save(GameResult gameResult) throws DuplicateGameResultException {
         try {
-            gameResultRepository.save(gameResult);
+            gameResultRepository.saveAndFlush(gameResult);
             LOGGER.info("GameResult saved successfully for GameID={}.", gameResult.getGameId());
         } catch (DataIntegrityViolationException e) {
             LOGGER.error("Attempted to save duplicate GameResult for GameID={}.", gameResult.getGameId());

@@ -21,13 +21,14 @@ import java.util.UUID;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "game_result", uniqueConstraints = { @UniqueConstraint(columnNames = {"game_id"}) })
 public class GameResult {
     @Id
-    @Column(updatable = false, nullable = false)
+    @Column(name = "id", updatable = false, nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(name = "game_id", nullable = false)
     private String gameId;
 
     private int score;
@@ -42,6 +43,6 @@ public class GameResult {
     private LocalDateTime timestamp;
 
     @ElementCollection
-    @CollectionTable(name = "processed_messages", joinColumns = @JoinColumn(name = "game_result_id"))
+    @CollectionTable(name = "processed_messages", joinColumns = @JoinColumn(name = "game_result_id", referencedColumnName = "id"))
     private List<ProcessedMessage> processedMessages = new ArrayList<>();
 }

@@ -9,7 +9,7 @@ import org.mockito.MockitoAnnotations;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Unit tests for Home controller
+ * Unit tests for HomeController
  *
  * @author vinodjohn
  * @created 14.12.2024
