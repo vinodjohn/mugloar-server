@@ -10,7 +10,7 @@
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-<div th:replace="fragments/navbar"></div>
+<div th:replace="~{fragments/navbar}"></div>
 
 <div class="container mt-5">
     <div class="card">
@@ -61,7 +61,7 @@
 
     <div class="mt-4">
         <h3>Solved Messages</h3>
-        <div th:if="${not empty processedMessages}">
+        <div th:if="${!gameResult.processedMessages.isEmpty()}">
             <div class="table-responsive">
                 <table class="table table-striped table-hover" id="processedMessagesTable">
                     <thead class="table-dark">
@@ -73,14 +73,13 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr class="clickable-row"
+                    <tr th:each="msg : ${processedMessages}" class="clickable-row"
                         th:data-adid="${msg.decodedAdId}"
                         th:data-failurereason="${msg.failureReason}"
                         th:data-message="${msg.decodedMessage}"
                         th:data-reward="${msg.reward}"
                         th:data-success="${msg.success}"
-                        th:data-turn="${msg.turn}"
-                        th:each="msg : ${processedMessages}">
+                        th:data-turn="${msg.turn}">
                         <td th:text="${msg.decodedAdId}">AdID</td>
                         <td th:text="${msg.reward}">Reward</td>
                         <td>
@@ -96,8 +95,8 @@
                 </table>
             </div>
         </div>
-        <div th:unless="${not empty processedMessages}">
-            <div class="alert alert-info" role="alert">
+        <div th:unless="${!gameResult.processedMessages.isEmpty()}">
+            <div class="alert alert-primary" role="alert">
                 No messages were solved in this game.
             </div>
         </div>

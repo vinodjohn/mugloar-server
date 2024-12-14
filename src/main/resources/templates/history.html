@@ -19,7 +19,7 @@
         <span th:text="${errorMessage}">Error Message</span>
     </div>
 
-    <div th:if="${not empty gameResultPage}">
+    <div th:if="${!gameResultPage.isEmpty()}">
         <div class="table-responsive">
             <table class="table table-striped table-hover" id="gameHistoryTable">
                 <thead class="table-dark">
@@ -48,8 +48,8 @@
         </div>
     </div>
 
-    <div th:unless="${not empty gameResultPage}">
-        <div class="alert alert-info" role="alert">
+    <div th:unless="${!gameResultPage.isEmpty()}">
+        <div class="alert alert-primary" role="alert">
             No game history available.
         </div>
     </div>
