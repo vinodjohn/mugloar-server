@@ -202,14 +202,19 @@ public class StrategyServiceImpl implements StrategyService {
 
     private double computeBenefitPerGold(ShopItem item) {
         return switch (item.getId().toLowerCase()) {
-            case "hpot" -> // Healing Potion
-                    0.05;
-            case "wingpot" -> // Potion of Awesome Wings
-                    0.066;
-            case "mtrix" -> // Matrix (Assumed to be an item that improves skills)
-                    0.075;
+            case "hpot" -> 0.05;         // Healing Potion - Low-cost survival boost
+            case "cs" -> 0.04;           // Claw Sharpening - Attack enhancement
+            case "gas" -> 0.03;          // Gasoline - Fire attack boost
+            case "wax" -> 0.02;          // Copper Plating - Defensive improvement
+            case "tricks" -> 0.04;       // Book of Tricks - Skill boost
+            case "wingpot" -> 0.06;      // Potion of Stronger Wings - Mobility enhancement
+            case "ch" -> 0.07;           // Claw Honing - Advanced attack power
+            case "rf" -> 0.06;           // Rocket Fuel - Attack speed boost
+            case "iron" -> 0.05;         // Iron Plating - Strong defense
+            case "mtrix" -> 0.08;        // Book of Megatricks - Major skill upgrade
+            case "wingpotmax" -> 0.09;   // Potion of Awesome Wings - Maximum mobility
 
-            default -> 0.0;
+            default -> 0.0;              // Unknown items have no benefit
         };
     }
 
