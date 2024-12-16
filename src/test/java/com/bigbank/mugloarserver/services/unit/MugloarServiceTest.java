@@ -94,7 +94,7 @@ public class MugloarServiceTest {
                 "\"probability\":\"Sure\"}]");
         List<Message> messages = mugloarService.getMessages("test");
         assertEquals(1, messages.size());
-        assertEquals("ad1", messages.getFirst().getAdId());
+        assertEquals("ad1", messages.getFirst().getDecodedAdId());
     }
 
     @Test

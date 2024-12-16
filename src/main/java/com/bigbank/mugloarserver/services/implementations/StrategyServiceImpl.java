@@ -68,7 +68,7 @@ public class StrategyServiceImpl implements StrategyService {
         }
 
         List<Message> unsolvedMessages = messages.stream()
-                .filter(message -> !solvedMessageIds.contains(message.getAdId()))
+                .filter(message -> !solvedMessageIds.contains(message.getDecodedAdId()))
                 .toList();
 
         if (unsolvedMessages.isEmpty()) {
@@ -86,7 +86,7 @@ public class StrategyServiceImpl implements StrategyService {
         if (bestMessage.isPresent()) {
             Message selectedMessage = bestMessage.get().message();
 
-            LOGGER.debug("Chosen message ID: {} with difficulty score: {}", selectedMessage.getAdId(),
+            LOGGER.debug("Chosen message ID: {} with difficulty score: {}", selectedMessage.getDecodedAdId(),
                     bestMessage.get().score());
             return selectedMessage;
         } else {
@@ -102,7 +102,19 @@ public class StrategyServiceImpl implements StrategyService {
             return Collections.emptyList();
         }
 
-        Set<String> requiredItemIds = new HashSet<>(Arrays.asList("hpot", "wingpot", "mtrix"));
+        Set<String> requiredItemIds = new HashSet<>(List.of(
+                "hpot",       // Healing potion
+                "cs",         // Claw Sharpening
+                "gas",        // Gasoline
+                "wax",        // Copper Plating
+                "tricks",     // Book of Tricks
+                "wingpot",    // Potion of Stronger Wings
+                "ch",         // Claw Honing
+                "rf",         // Rocket Fuel
+                "iron",       // Iron Plating
+                "mtrix",      // Book of Megatricks
+                "wingpotmax"  // Potion of Awesome Wings
+        ));
 
         List<ShopItem> requiredItems = shopItems.stream()
                 .filter(item -> requiredItemIds.contains(item.getId()))
@@ -178,7 +190,7 @@ public class StrategyServiceImpl implements StrategyService {
 
         if (expiresIn <= 0) {
             LOGGER.warn("Message '{}' has non-positive expiresIn: {}. Assigning maximum difficulty.",
-                    message.getAdId(), expiresIn);
+                    message.getDecodedAdId(), expiresIn);
 
             return Double.MAX_VALUE; // Highest difficulty
         }
@@ -191,11 +203,11 @@ public class StrategyServiceImpl implements StrategyService {
         double adjustedDifficulty =
                 baseDifficulty * (peopleMultiplier + stateMultiplier + underworldMultiplier) / dragonLevel;
 
-        int failures = failureCounts.getOrDefault(message.getAdId(), 0);
+        int failures = failureCounts.getOrDefault(message.getDecodedAdId(), 0);
         adjustedDifficulty += failures * 0.5; // Example: each failure adds 0.5 to difficulty
 
         LOGGER.debug("Computed difficulty score for message '{}': {} (Failures: {}, Dragon Level: {})",
-                message.getAdId(), adjustedDifficulty, failures, dragonLevel);
+                message.getDecodedAdId(), adjustedDifficulty, failures, dragonLevel);
 
         return adjustedDifficulty;
     }

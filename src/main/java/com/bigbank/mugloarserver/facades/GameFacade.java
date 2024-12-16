@@ -174,19 +174,19 @@ public class GameFacade {
                     break;
                 }
 
-                sendGameStateUpdate(game.getGameId(), "now_solving_message", chosenMessage.getMessage());
+                sendGameStateUpdate(game.getGameId(), "now_solving_message", chosenMessage.getDecodedMessage());
 
                 // Attempt to solve the message
                 MessageSolveResponse solveResponse = mugloarService.solveMessage(game.getGameId(),
-                        chosenMessage.getAdId());
+                        chosenMessage.getDecodedAdId());
 
                 if (solveResponse != null && solveResponse.isSuccess()) {
-                    LOGGER.info("Successfully solved message '{}'.", chosenMessage.getAdId());
+                    LOGGER.info("Successfully solved message '{}'.", chosenMessage.getDecodedAdId());
                     updateGameStateFromSolveResponse(game, solveResponse);
 
                     ProcessedMessage processedMessage = new ProcessedMessage(
-                            chosenMessage.getAdId(),
-                            chosenMessage.getMessage(),
+                            chosenMessage.getDecodedAdId(),
+                            chosenMessage.getDecodedMessage(),
                             game.getTurn(),
                             chosenMessage.getIntReward(),
                             true,
@@ -194,17 +194,17 @@ public class GameFacade {
                     );
                     processedMessages.add(processedMessage);
 
-                    strategyService.markMessageAsSolved(chosenMessage.getAdId());
+                    strategyService.markMessageAsSolved(chosenMessage.getDecodedAdId());
                     anyMessageSolved = true;
-                    sendGameStateUpdate(game.getGameId(), "message_solved", chosenMessage.getMessage());
+                    sendGameStateUpdate(game.getGameId(), "message_solved", chosenMessage.getDecodedMessage());
 
                 } else {
-                    LOGGER.warn("Failed to solve message '{}'. Lives left: {}", chosenMessage.getAdId(),
+                    LOGGER.warn("Failed to solve message '{}'. Lives left: {}", chosenMessage.getDecodedAdId(),
                             game.getLives());
 
                     ProcessedMessage processedMessage = new ProcessedMessage(
-                            chosenMessage.getAdId(),
-                            chosenMessage.getMessage(),
+                            chosenMessage.getDecodedAdId(),
+                            chosenMessage.getDecodedMessage(),
                             game.getTurn(),
                             chosenMessage.getIntReward(),
                             false,
@@ -212,8 +212,8 @@ public class GameFacade {
                     );
 
                     processedMessages.add(processedMessage);
-                    strategyService.recordFailure(chosenMessage.getAdId());
-                    sendGameStateUpdate(game.getGameId(), "message_failed", chosenMessage.getMessage());
+                    strategyService.recordFailure(chosenMessage.getDecodedAdId());
+                    sendGameStateUpdate(game.getGameId(), "message_failed", chosenMessage.getDecodedMessage());
                 }
 
                 allMessages.remove(chosenMessage);

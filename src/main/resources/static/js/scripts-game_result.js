@@ -10,7 +10,38 @@ $(document).ready(function () {
         "responsive": true
     });
 
+    const rows = [];
+    const itemCounts = {};
+
+    $('#purchasedItemsTable tbody tr').each(function () {
+        const id = $(this).find('td:nth-child(1)').text().trim();
+        const name = $(this).find('td:nth-child(2)').text().trim();
+        const cost = $(this).find('td:nth-child(3)').text().trim();
+
+        const key = `${id}_${name}_${cost}`;
+        if (!itemCounts[key]) {
+            itemCounts[key] = { id, name, cost, quantity: 1 };
+        } else {
+            itemCounts[key].quantity += 1;
+        }
+    });
+
+    Object.values(itemCounts).forEach(item => {
+        rows.push([item.id, item.name, item.cost, item.quantity]);
+    });
+
+    if ($.fn.DataTable.isDataTable('#purchasedItemsTable')) {
+        $('#purchasedItemsTable').DataTable().destroy();
+    }
+
     $('#purchasedItemsTable').DataTable({
+        data: rows,
+        columns: [
+            { title: "Id" },
+            { title: "Name" },
+            { title: "Cost" },
+            { title: "Quantity" }
+        ],
         "paging": true,
         "lengthChange": false,
         "pageLength": 10,
