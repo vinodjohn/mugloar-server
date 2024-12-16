@@ -20,7 +20,7 @@ $(document).ready(function () {
 
         const key = `${id}_${name}_${cost}`;
         if (!itemCounts[key]) {
-            itemCounts[key] = { id, name, cost, quantity: 1 };
+            itemCounts[key] = {id, name, cost, quantity: 1};
         } else {
             itemCounts[key].quantity += 1;
         }
@@ -37,10 +37,10 @@ $(document).ready(function () {
     $('#purchasedItemsTable').DataTable({
         data: rows,
         columns: [
-            { title: "Id" },
-            { title: "Name" },
-            { title: "Cost" },
-            { title: "Quantity" }
+            {title: "Id"},
+            {title: "Name"},
+            {title: "Cost"},
+            {title: "Quantity"}
         ],
         "paging": true,
         "lengthChange": false,

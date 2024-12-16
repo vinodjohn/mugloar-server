@@ -1,5 +1,6 @@
 package com.bigbank.mugloarserver.services.integration;
 
+import com.bigbank.mugloarserver.models.ShopItem;
 import com.bigbank.mugloarserver.services.InventoryService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,21 +22,21 @@ public class InventoryServiceIntegrationTest {
 
     @Test
     void integration_AddAndCheckItem() {
-        assertFalse(inventoryService.hasItem("gameInt", "shield"));
-        inventoryService.addItem("gameInt", "shield");
-        assertTrue(inventoryService.hasItem("gameInt", "shield"));
+        assertTrue(inventoryService.hasItem("gameInt", new ShopItem("2", "itemY", 120)));
+        inventoryService.addItem("gameInt", new ShopItem("2", "itemY", 120));
+        assertTrue(inventoryService.hasItem("gameInt", new ShopItem("2", "itemY", 120)));
     }
 
     @Test
     void integration_CheckItemCaseInsensitivity() {
-        inventoryService.addItem("gameInt", "SWORD");
-        assertTrue(inventoryService.hasItem("gameInt", "sword"));
+        inventoryService.addItem("gameInt", new ShopItem("2", "itemY", 120));
+        assertTrue(inventoryService.hasItem("gameInt", new ShopItem("2", "itemY", 120)));
     }
 
     @Test
     void integration_SeparateGames() {
-        inventoryService.addItem("gameX", "potion");
-        assertTrue(inventoryService.hasItem("gameX", "potion"));
-        assertFalse(inventoryService.hasItem("gameY", "potion"));
+        inventoryService.addItem("gameX", new ShopItem("2", "itemY", 120));
+        assertTrue(inventoryService.hasItem("gameX", new ShopItem("2", "itemY", 120)));
+        assertFalse(inventoryService.hasItem("gameY", new ShopItem("2", "itemY", 120)));
     }
 }

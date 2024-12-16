@@ -64,13 +64,13 @@ public class GameFacadeIntegrationTest {
         });
 
         when(mugloarService.getMessages("gameFacadeTest"))
-                .thenReturn(List.of(new Message("ad1", "msg1", "10", 3, null, "", List.of(), "")))
-                .thenReturn(List.of(new Message("ad2", "msg2", "20", 3, null, "", List.of(), "")))
+                .thenReturn(List.of(new Message("ad1", "msg1", "10", 3, null, "")))
+                .thenReturn(List.of(new Message("ad2", "msg2", "20", 3, null, "")))
                 .thenReturn(Collections.emptyList());
 
         when(strategyService.chooseMessage(anyList(), eq(mockGame)))
-                .thenReturn(new Message("ad1", "msg1", "10", 3, null, "", List.of(), ""))
-                .thenReturn(new Message("ad2", "msg2", "20", 3, null, "", List.of(), ""))
+                .thenReturn(new Message("ad1", "msg1", "10", 3, null, ""))
+                .thenReturn(new Message("ad2", "msg2", "20", 3, null, ""))
                 .thenReturn(null);
 
         when(mugloarService.solveMessage(eq("gameFacadeTest"), anyString()))
@@ -84,10 +84,10 @@ public class GameFacadeIntegrationTest {
                 .thenReturn(List.of(new ShopItem("hpot", "Healing Potion", 50.0)));
 
         when(mugloarService.buyItem(eq("gameFacadeTest"), eq("hpot")))
-                .thenReturn(new ShopPurchaseResponse("success", 70.0, mockGame.getLives(), 1, 3, ""));
+                .thenReturn(new ShopPurchaseResponse("success", 70.0, mockGame.getLives(), 1, 3));
 
-        when(inventoryService.hasItem(anyString(), anyString())).thenReturn(false);
-        doNothing().when(inventoryService).addItem(anyString(), anyString());
+        when(inventoryService.hasItem(anyString(), any(ShopItem.class))).thenReturn(false);
+        doNothing().when(inventoryService).addItem(anyString(), any(ShopItem.class));
     }
 
     @Test

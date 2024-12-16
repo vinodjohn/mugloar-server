@@ -73,13 +73,13 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="msg : ${processedMessages}" class="clickable-row"
-                        th:data-adid="${msg.decodedAdId}"
+                    <tr class="clickable-row" th:data-adid="${msg.decodedAdId}"
                         th:data-failurereason="${msg.failureReason}"
                         th:data-message="${msg.decodedMessage}"
                         th:data-reward="${msg.reward}"
                         th:data-success="${msg.success}"
-                        th:data-turn="${msg.turn}">
+                        th:data-turn="${msg.turn}"
+                        th:each="msg : ${processedMessages}">
                         <td th:text="${msg.decodedAdId}">AdID</td>
                         <td th:text="${msg.reward}">Reward</td>
                         <td>
@@ -115,10 +115,10 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="pi : ${purchasedItems}"
+                    <tr th:data-cost="${pi.cost}"
                         th:data-id="${pi.id}"
                         th:data-name="${pi.name}"
-                        th:data-cost="${pi.cost}">
+                        th:each="pi : ${purchasedItems}">
                         <td th:text="${pi.id}">ID</td>
                         <td th:text="${pi.name}">Name</td>
                         <td th:text="${pi.cost}">Cost</td>

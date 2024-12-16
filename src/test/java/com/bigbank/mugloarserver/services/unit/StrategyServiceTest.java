@@ -75,7 +75,7 @@ public class StrategyServiceTest {
 
     @Test
     void chooseMessage_AllSolved() {
-        Message msg1 = new Message("ad1", "msg", "100", 5, null, "", Collections.emptyList(), "");
+        Message msg1 = new Message("ad1", "msg", "100", 5, null, "");
         strategyService.markMessageAsSolved("ad1");
         Message result = strategyService.chooseMessage(List.of(msg1), new Game());
         assertNull(result);
@@ -83,10 +83,8 @@ public class StrategyServiceTest {
 
     @Test
     void chooseMessage_ReturnBestMessage() {
-        Message msg1 = new Message("ad1", "msg1", "50", 5, null, "", Collections.emptyList(), "");
-        msg1.setCategory("combat");
-        Message msg2 = new Message("ad2", "msg2", "100", 2, null, "", Collections.emptyList(), "");
-        msg2.setCategory("negotiation");
+        Message msg1 = new Message("ad1", "msg1", "50", 5, null, "");
+        Message msg2 = new Message("ad2", "msg2", "100", 2, null, "");
         Game game = new Game();
         game.setWingStrength(5);
         game.setScaleThickness(5);

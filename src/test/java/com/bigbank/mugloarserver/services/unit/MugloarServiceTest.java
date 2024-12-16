@@ -10,7 +10,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -191,7 +190,7 @@ public class MugloarServiceTest {
 
     @Test
     void validateMessage_Invalid() {
-        Message msg = new Message(null, null, "-1", 0, null, "", Collections.emptyList(), "");
+        Message msg = new Message(null, null, "-1", 0, null, "");
         assertThrows(MugloarException.class, () -> invokePrivate("validateMessage", msg));
     }
 

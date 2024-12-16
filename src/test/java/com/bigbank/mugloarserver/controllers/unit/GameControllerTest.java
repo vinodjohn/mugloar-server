@@ -67,7 +67,7 @@ public class GameControllerTest {
 
     @Test
     void displayResult_ValidGameId() {
-        GameResult mockResult = new GameResult(null, "validId", 0, 0, 3, 100.0, 1, 0, false, null, null);
+        GameResult mockResult = new GameResult(null, "validId", 0, 0, 3, 100.0, 1, 0, false, null, null, null);
         when(gameResultService.findByGameId("validId")).thenReturn(mockResult);
         String view = gameController.displayResult(model, "validId");
         assertEquals("result", view);

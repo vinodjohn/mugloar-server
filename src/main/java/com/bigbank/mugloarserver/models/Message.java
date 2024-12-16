@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Base64;
-import java.util.List;
 
 /**
  * Message model that represents a task (message) retrieved from the message board in the game.

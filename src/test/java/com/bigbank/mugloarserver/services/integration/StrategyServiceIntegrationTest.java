@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -37,8 +36,8 @@ public class StrategyServiceIntegrationTest {
 
     @Test
     void chooseMessage_Integration() {
-        Message m1 = new Message("m1", "Message1", "100", 5, null, "", Collections.emptyList(), "");
-        Message m2 = new Message("m2", "Message2", "50", 2, null, "", Collections.emptyList(), "");
+        Message m1 = new Message("m1", "Message1", "100", 5, null, "");
+        Message m2 = new Message("m2", "Message2", "50", 2, null, "");
         Game game = new Game();
         game.setWingStrength(3);
         Message chosen = strategyService.chooseMessage(List.of(m1, m2), game);

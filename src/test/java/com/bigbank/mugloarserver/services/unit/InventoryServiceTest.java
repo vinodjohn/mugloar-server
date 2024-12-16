@@ -1,5 +1,6 @@
 package com.bigbank.mugloarserver.services.unit;
 
+import com.bigbank.mugloarserver.models.ShopItem;
 import com.bigbank.mugloarserver.services.implementations.InventoryServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,39 +27,39 @@ public class InventoryServiceTest {
 
     @Test
     void hasItem_EmptyStore() {
-        assertFalse(inventoryService.hasItem("game1", "itemX"));
+        assertFalse(inventoryService.hasItem("game1", new ShopItem("1", "itemX", 100)));
     }
 
     @Test
     void hasItem_ItemExists() {
-        inventoryService.addItem("game1", "itemX");
-        assertTrue(inventoryService.hasItem("game1", "itemX"));
+        inventoryService.addItem("game1", new ShopItem("1", "itemX", 100));
+        assertTrue(inventoryService.hasItem("game1", new ShopItem("1", "itemX", 100)));
     }
 
     @Test
     void hasItem_DifferentCase() {
-        inventoryService.addItem("game1", "ITEMX");
-        assertTrue(inventoryService.hasItem("game1", "itemx"));
+        inventoryService.addItem("game1", new ShopItem("1", "itemX", 100));
+        assertTrue(inventoryService.hasItem("game1", new ShopItem("1", "itemX", 100)));
     }
 
     @Test
     void hasItem_DifferentGame() {
-        inventoryService.addItem("game1", "itemA");
-        assertFalse(inventoryService.hasItem("game2", "itemA"));
+        inventoryService.addItem("game1", new ShopItem("1", "itemX", 100));
+        assertFalse(inventoryService.hasItem("game2", new ShopItem("1", "itemX", 100)));
     }
 
     @Test
     void addItem_NewGame() {
-        assertFalse(inventoryService.hasItem("gameNew", "itemA"));
-        inventoryService.addItem("gameNew", "itemA");
-        assertTrue(inventoryService.hasItem("gameNew", "itemA"));
+        assertFalse(inventoryService.hasItem("gameNew", new ShopItem("1", "itemX", 100)));
+        inventoryService.addItem("gameNew", new ShopItem("1", "itemX", 100));
+        assertTrue(inventoryService.hasItem("gameNew", new ShopItem("1", "itemX", 100)));
     }
 
     @Test
     void addItem_ExistingGameMultipleItems() {
-        inventoryService.addItem("game1", "itemA");
-        inventoryService.addItem("game1", "itemB");
-        assertTrue(inventoryService.hasItem("game1", "itemA"));
-        assertTrue(inventoryService.hasItem("game1", "itemB"));
+        inventoryService.addItem("game1", new ShopItem("1", "itemX", 100));
+        inventoryService.addItem("game1", new ShopItem("2", "itemY", 120));
+        assertTrue(inventoryService.hasItem("game1", new ShopItem("1", "itemX", 100)));
+        assertTrue(inventoryService.hasItem("game1", new ShopItem("2", "itemY", 120)));
     }
 }

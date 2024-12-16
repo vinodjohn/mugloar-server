@@ -17,9 +17,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * A facade that orchestrates the game flow: start a game, investigate, solve tasks and store the result.
@@ -387,21 +384,6 @@ public class GameFacade {
     private void sendGameStateUpdate(String gameId, String state, String message) {
         GameStateMessage gameStateMessage = new GameStateMessage(gameId, state, message, LocalDateTime.now());
         messagingTemplate.convertAndSend("/topic/game-status/" + gameId, gameStateMessage);
-    }
-
-    private ShopItem getShopItemById(String gameId, String itemId) {
-        List<ShopItem> shopItems = mugloarService.getShopItems(gameId);
-        Optional<ShopItem> optionalItem = shopItems.stream()
-                .filter(item -> item.getId().equalsIgnoreCase(itemId))
-                .findFirst();
-
-        if (optionalItem.isPresent()) {
-            return optionalItem.get();
-        } else {
-            LOGGER.warn("Shop item with ID '{}' not found in GameID={}.", itemId, gameId);
-            sendGameStateUpdate(gameId, "shop_item_not_found", "Required shop item '" + itemId + "' not found.");
-            return null;
-        }
     }
 
     private void updateGameStateFromPurchaseResponse(Game game, ShopPurchaseResponse purchaseResponse,

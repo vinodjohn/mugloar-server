@@ -1,10 +1,10 @@
 # Dragons of Mugloar Server
 
-![Dragons of Mugloar](https://example.com/dragon-image.png)
+**Dragons of Mugloar Server** is a Spring Boot-based backend application that manages the game flow for the "Dragons of
+Mugloar" game. It integrates with the Mugloar API, handles game state, inventory management, and provides real-time
+updates via WebSockets.
 
-**Dragons of Mugloar Server** is a Spring Boot-based backend application that manages the game flow for the "Dragons of Mugloar" game. It integrates with the Mugloar API, handles game state, inventory management, and provides real-time updates via WebSockets.
-
-**View this app hosted in AWS here:**  http://54.93.218.156:8080/
+**View this app hosted in AWS here:**  http://3.70.217.198:8080/
 ---
 
 ## Table of Contents
@@ -87,7 +87,6 @@
     ```
 
 _**Note:** This app doesn't have any preview features of Java._
-
 
 ## Authors
 
