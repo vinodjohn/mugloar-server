@@ -38,9 +38,6 @@ public class Message {
     @JsonProperty("probability")
     private String probability;
 
-    private List<String> requiredItems;
-    private String category;
-
     public String getDecodedAdId() {
         if (this.encrypted != null && this.encrypted == 1) {
             try {

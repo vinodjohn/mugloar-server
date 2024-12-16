@@ -175,7 +175,6 @@ public class StrategyServiceImpl implements StrategyService {
     private double computeDifficultyScore(Message message, Game game) {
         int reward = message.getIntReward();
         int expiresIn = message.getExpiresIn();
-        String category = message.getCategory();
 
         if (expiresIn <= 0) {
             LOGGER.warn("Message '{}' has non-positive expiresIn: {}. Assigning maximum difficulty.",
@@ -187,39 +186,18 @@ public class StrategyServiceImpl implements StrategyService {
         // Base difficulty score: higher reward and lower expiresIn imply easier messages
         double baseDifficulty = (double) reward / expiresIn;
 
-        double categoryAdjustment = getCategoryAdjustment(category);
-
         double dragonLevel = game.getDragonLevel();
 
         double adjustedDifficulty =
-                baseDifficulty * (peopleMultiplier + stateMultiplier + underworldMultiplier) * categoryAdjustment
-                        / dragonLevel;
+                baseDifficulty * (peopleMultiplier + stateMultiplier + underworldMultiplier) / dragonLevel;
 
         int failures = failureCounts.getOrDefault(message.getAdId(), 0);
         adjustedDifficulty += failures * 0.5; // Example: each failure adds 0.5 to difficulty
 
-        LOGGER.debug("Computed difficulty score for message '{}': {} (Category: {}, Adjustment: {}, Failures: {}, " +
-                        "Dragon Level: {})",
-                message.getAdId(), adjustedDifficulty, category, categoryAdjustment, failures, dragonLevel);
+        LOGGER.debug("Computed difficulty score for message '{}': {} (Failures: {}, Dragon Level: {})",
+                message.getAdId(), adjustedDifficulty, failures, dragonLevel);
 
         return adjustedDifficulty;
-    }
-
-    private double getCategoryAdjustment(String category) {
-        if (category == null) {
-            LOGGER.warn("Message category is null. Using neutral adjustment.");
-            return 1.0;
-        }
-
-        return switch (category.toLowerCase()) {
-            case "negotiation" -> 0.9; // Easier
-            case "combat" -> 1.2; // Harder
-            case "exploration" -> 1.0; // Neutral
-            default -> {
-                LOGGER.warn("Unknown category '{}'. Using neutral adjustment.", category);
-                yield 1.0;
-            }
-        };
     }
 
     private double computeBenefitPerGold(ShopItem item) {

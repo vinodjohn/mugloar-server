@@ -61,6 +61,7 @@ public class GameController {
         if (gameResult != null) {
             model.addAttribute("gameResult", gameResult);
             model.addAttribute("processedMessages", gameResult.getProcessedMessages());
+            model.addAttribute("purchasedItems", gameResult.getPurchasedItems());
             return "result";
         } else {
             model.addAttribute("errorMessage", "Failed to retrieve game results.");

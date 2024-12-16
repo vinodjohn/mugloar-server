@@ -9,8 +9,8 @@ import lombok.*;
  * @author vinodjohn
  * @created 08.12.2024
  */
-@Getter
-@Setter
+@Data
+@Builder
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor

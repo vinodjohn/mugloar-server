@@ -61,7 +61,7 @@
 
     <div class="mt-4">
         <h3>Solved Messages</h3>
-        <div th:if="${!gameResult.processedMessages.isEmpty()}">
+        <div th:if="${!processedMessages.isEmpty()}">
             <div class="table-responsive">
                 <table class="table table-striped table-hover" id="processedMessagesTable">
                     <thead class="table-dark">
@@ -95,9 +95,40 @@
                 </table>
             </div>
         </div>
-        <div th:unless="${!gameResult.processedMessages.isEmpty()}">
+        <div th:unless="${!processedMessages.isEmpty()}">
             <div class="alert alert-primary" role="alert">
                 No messages were solved in this game.
+            </div>
+        </div>
+    </div>
+    <div class="mt-4">
+        <h3>Purchased Items</h3>
+        <div th:if="${!purchasedItems.isEmpty()}">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="purchasedItemsTable">
+                    <thead class="table-dark">
+                    <tr>
+                        <th scope="col">Id</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Cost</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="pi : ${purchasedItems}"
+                        th:data-id="${pi.id}"
+                        th:data-name="${pi.name}"
+                        th:data-cost="${pi.cost}">
+                        <td th:text="${pi.id}">ID</td>
+                        <td th:text="${pi.name}">Name</td>
+                        <td th:text="${pi.cost}">Cost</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div th:unless="${!purchasedItems.isEmpty()}">
+            <div class="alert alert-primary" role="alert">
+                No items were purchased in this game.
             </div>
         </div>
     </div>

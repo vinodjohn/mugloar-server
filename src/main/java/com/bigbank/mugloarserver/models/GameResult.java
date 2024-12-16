@@ -46,4 +46,9 @@ public class GameResult {
     @CollectionTable(name = "processed_messages", joinColumns = @JoinColumn(name = "game_result_id",
             referencedColumnName = "id"))
     private List<ProcessedMessage> processedMessages = new ArrayList<>();
+
+    @ElementCollection
+    @CollectionTable(name = "shop_items", joinColumns = @JoinColumn(name = "game_result_id",
+            referencedColumnName = "id"))
+    private List<ShopItem> purchasedItems = new ArrayList<>();
 }

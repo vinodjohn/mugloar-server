@@ -176,31 +176,6 @@ public class GameFacade {
 
                 sendGameStateUpdate(game.getGameId(), "now_solving_message", chosenMessage.getMessage());
 
-                // Check if required items are owned
-                List<String> requiredItems = chosenMessage.getRequiredItems();
-                if (requiredItems != null && !requiredItems.isEmpty()) {
-                    boolean allItemsOwned = requiredItems.stream()
-                            .allMatch(itemId -> inventoryService.hasItem(game.getGameId(), itemId));
-
-                    if (!allItemsOwned) {
-                        LOGGER.info("Required items for message '{}' are not all owned. Attempting to purchase.",
-                                chosenMessage.getAdId());
-                        sendGameStateUpdate(game.getGameId(), "missing_items", "Missing items for message. Attempting" +
-                                " to purchase required items.");
-
-                        List<ShopItem> missingItems = requiredItems.stream()
-                                .filter(itemId -> !inventoryService.hasItem(game.getGameId(), itemId))
-                                .map(itemId -> getShopItemById(game.getGameId(), itemId))
-                                .filter(Objects::nonNull)
-                                .collect(Collectors.toList());
-
-                        performShopPhaseWithItems(game, missingItems);
-
-                        allMessages.remove(chosenMessage);
-                        continue;
-                    }
-                }
-
                 // Attempt to solve the message
                 MessageSolveResponse solveResponse = mugloarService.solveMessage(game.getGameId(),
                         chosenMessage.getAdId());
@@ -242,6 +217,7 @@ public class GameFacade {
                 }
 
                 allMessages.remove(chosenMessage);
+                performShopPhase(game);
             }
 
             return anyMessageSolved;
@@ -281,8 +257,8 @@ public class GameFacade {
                     if (purchaseResponse != null && purchaseResponse.isSuccess()) {
                         LOGGER.info("Bought item '{}'.", item.getName());
 
-                        updateGameStateFromPurchaseResponse(game, purchaseResponse);
-                        inventoryService.addItem(game.getGameId(), item.getId());
+                        updateGameStateFromPurchaseResponse(game, purchaseResponse, item.getName());
+                        inventoryService.addItem(game.getGameId(), item);
                         sendGameStateUpdate(game.getGameId(), "item_purchased", item.getName());
                     } else {
                         LOGGER.warn("Failed to buy item '{}'.", item.getName());
@@ -349,6 +325,8 @@ public class GameFacade {
                     "goal.");
         }
 
+        List<ShopItem> purchasedItems = inventoryService.getAllByGameId(game.getGameId());
+
         GameResult gameResult = new GameResult(
                 null,
                 game.getGameId(),
@@ -360,7 +338,8 @@ public class GameFacade {
                 game.getTurn(),
                 achievedGoal,
                 LocalDateTime.now(),
-                processedMessages
+                processedMessages,
+                purchasedItems
         );
 
         try {
@@ -425,44 +404,8 @@ public class GameFacade {
         }
     }
 
-    private void performShopPhaseWithItems(Game game, List<ShopItem> items) {
-        if (items == null || items.isEmpty()) {
-            LOGGER.info("No missing items to purchase.");
-            sendGameStateUpdate(game.getGameId(), "no_missing_items", "No missing items to purchase.");
-            return;
-        }
-
-        for (ShopItem item : items) {
-            try {
-                sendGameStateUpdate(game.getGameId(), "now_purchasing_item", item.getName());
-                ShopPurchaseResponse purchaseResponse = mugloarService.buyItem(game.getGameId(), item.getId());
-
-                if (purchaseResponse != null && purchaseResponse.isSuccess()) {
-                    LOGGER.info("Bought required item '{}'.", item.getName());
-
-                    updateGameStateFromPurchaseResponse(game, purchaseResponse);
-                    inventoryService.addItem(game.getGameId(), item.getId());
-                    sendGameStateUpdate(game.getGameId(), "item_purchased", item.getName());
-
-                } else {
-                    LOGGER.warn("Failed to buy required item '{}'.", item.getName());
-                    sendGameStateUpdate(game.getGameId(), "item_purchase_failed", item.getName());
-                }
-            } catch (GameOverException goe) {
-                LOGGER.warn("Game Over detected during item purchase: {}", goe.getMessage());
-                sendGameStateUpdate(game.getGameId(), "game_over", "Game Over detected during item purchase.");
-                throw goe;
-            } catch (MugloarException me) {
-                LOGGER.error("MugloarException during item purchase: {}. Continuing the game.", me.getCode());
-                sendGameStateUpdate(game.getGameId(), "shop_error", "Encountered an error during item purchase.");
-            } catch (Exception e) {
-                LOGGER.error("Error buying item '{}': {}. Continuing the game.", item.getName(), e.getMessage(), e);
-                sendGameStateUpdate(game.getGameId(), "shop_unexpected_error", item.getName());
-            }
-        }
-    }
-
-    private void updateGameStateFromPurchaseResponse(Game game, ShopPurchaseResponse purchaseResponse) {
+    private void updateGameStateFromPurchaseResponse(Game game, ShopPurchaseResponse purchaseResponse,
+                                                     String purchasedItemName) {
         if (purchaseResponse == null) {
             LOGGER.warn("Purchase response is null. No game state updated.");
             sendGameStateUpdate(game.getGameId(), "purchase_response_null", "Purchase response is null.");
@@ -474,7 +417,7 @@ public class GameFacade {
         game.setLevel(purchaseResponse.getLevel());
         game.setTurn(purchaseResponse.getTurn());
 
-        applyItemEffect(game, purchaseResponse.getMessage());
+        applyItemEffect(game, purchasedItemName);
 
         LOGGER.debug("Game state updated after purchasing item. Current state: {}", game);
         sendGameStateUpdate(game.getGameId(), "purchase_updated", "Game state updated after purchasing item.");

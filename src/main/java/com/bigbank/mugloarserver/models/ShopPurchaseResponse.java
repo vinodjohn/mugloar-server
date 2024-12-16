@@ -32,9 +32,7 @@ public class ShopPurchaseResponse {
     @JsonProperty("turn")
     private int turn;
 
-    private String message;
-
     public boolean isSuccess() {
-        return Boolean.getBoolean(shoppingSuccess);
+        return Boolean.parseBoolean(shoppingSuccess);
     }
 }

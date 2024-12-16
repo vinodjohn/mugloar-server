@@ -10,6 +10,17 @@ $(document).ready(function () {
         "responsive": true
     });
 
+    $('#purchasedItemsTable').DataTable({
+        "paging": true,
+        "lengthChange": false,
+        "pageLength": 10,
+        "searching": false,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true
+    });
+
     $('#processedMessagesTable tbody').on('click', 'tr.clickable-row', function () {
         const adId = $(this).data('adid');
         const message = $(this).data('message');

@@ -1,13 +1,12 @@
 package com.bigbank.mugloarserver.services.implementations;
 
+import com.bigbank.mugloarserver.models.ShopItem;
 import com.bigbank.mugloarserver.services.InventoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -20,18 +19,22 @@ import java.util.concurrent.ConcurrentHashMap;
 public class InventoryServiceImpl implements InventoryService {
     private static final Logger LOGGER = LoggerFactory.getLogger(InventoryServiceImpl.class);
 
-    private final Map<String, Set<String>> ownedItemsStore = new ConcurrentHashMap<>();
+    private final Map<String, List<ShopItem>> ownedItemsStore = new ConcurrentHashMap<>();
 
     @Override
-    public boolean hasItem(String gameId, String itemId) {
-        Set<String> ownedItemIds = ownedItemsStore.getOrDefault(gameId, Collections.emptySet());
-        return ownedItemIds.contains(itemId.toLowerCase());
+    public boolean hasItem(String gameId, ShopItem item) {
+        List<ShopItem> ownedItems = ownedItemsStore.getOrDefault(gameId, Collections.emptyList());
+        return ownedItems.contains(item);
     }
 
-    public void addItem(String gameId, String itemId) {
-        ownedItemsStore.computeIfAbsent(gameId, k -> ConcurrentHashMap.newKeySet())
-                .add(itemId.toLowerCase());
+    @Override
+    public void addItem(String gameId, ShopItem item) {
+        ownedItemsStore.computeIfAbsent(gameId, k -> new ArrayList<>()).add(item);
+        LOGGER.debug("Added item '{}' to GameID={}.", item.getName(), gameId);
+    }
 
-        LOGGER.debug("Added item '{}' to GameID={}.", itemId, gameId);
+    @Override
+    public List<ShopItem> getAllByGameId(String gameId) {
+        return ownedItemsStore.getOrDefault(gameId, Collections.emptyList());
     }
 }
